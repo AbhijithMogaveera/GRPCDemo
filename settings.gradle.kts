@@ -20,5 +20,6 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "ShoppingCatalogue"
-include(":app")
- 
+include(":androidApp")
+include(":protos")
+include(":server")
