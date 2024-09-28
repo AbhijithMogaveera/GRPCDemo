@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -23,6 +24,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.abhijith.public_channels.screens.unary.UnaryRPCActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name="com.abhijith.public_channels.screens.server_stream.ServerStreamingRPCActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name="com.abhijith.public_channels.screens.client_stream.ClientStreamingRPCActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name="com.abhijith.public_channels.screens.bidiriectional_streaming.BidirectionalStreamingRPCActivity"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>

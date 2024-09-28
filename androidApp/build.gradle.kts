@@ -68,6 +68,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation(project(":protos"))
+    implementation(libs.grpc.okhttp)
 
 }
 
