@@ -7,6 +7,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,7 +33,7 @@ import kotlin.random.Random
 
 class ClientStreamingRPCActivity : ComponentActivity() {
 
-    private var heartRateMonitor = ClientStreamingHeartRateMonitor()
+    private val heartRateMonitor: ClientStreamingRPCViewmodel by viewModels()
 
     companion object {
         fun start(context: Context) {
@@ -84,40 +85,44 @@ class ClientStreamingRPCActivity : ComponentActivity() {
                 text = "Start sending hart rate to server",
                 onClick = {
                     job = scope.launch {
-                        val mockNormal = Random.nextBoolean()
-                        if (mockNormal) {
+                        try {
+                            val mockNormal = Random.nextBoolean()
                             isClientIsStreaming = true
-                            val publish = heartRateMonitor.getHeartRatePublisher()
-                            publish.onNext(45.0)
-                            delay(300)
-                            publish.onNext(50.0)
-                            delay(300)
-                            publish.onNext(45.0)
-                            delay(300)
-                            publish.onNext(50.0)
-                            delay(300)
-                            publish.onNext(45.0)
-                            delay(300)
-                            publish.onNext(50.0)
-                            publish.onCompleted()
-                            isClientIsStreaming = false
-                        } else {
-                            isClientIsStreaming = true
-                            val publish = heartRateMonitor.getHeartRatePublisher()
-                            publish.onNext(0.0)
-                            delay(300)
-                            publish.onNext(0.0)
-                            delay(300)
-                            publish.onNext(0.0)
-                            delay(300)
-                            publish.onNext(0.0)
-                            delay(300)
-                            publish.onNext(0.0)
-                            delay(300)
-                            publish.onNext(0.0)
-                            publish.onCompleted()
+                            if (mockNormal) {
+                                val streamBuilder = heartRateMonitor.getHeartRatePublisher()
+                                streamBuilder.onNext(45.0).getOrThrow()
+                                delay(300)
+                                streamBuilder.onNext(50.0).getOrThrow()
+                                delay(300)
+                                streamBuilder.onNext(45.0).getOrThrow()
+                                delay(300)
+                                streamBuilder.onNext(50.0).getOrThrow()
+                                delay(300)
+                                streamBuilder.onNext(45.0).getOrThrow()
+                                delay(300)
+                                streamBuilder.onNext(50.0).getOrThrow()
+                                streamBuilder.onCompleted()
+                            } else {
+                                val publish = heartRateMonitor.getHeartRatePublisher()
+                                publish.onNext(0.0).getOrThrow()
+                                delay(300)
+                                publish.onNext(0.0).getOrThrow()
+                                delay(300)
+                                publish.onNext(0.0).getOrThrow()
+                                delay(300)
+                                publish.onNext(0.0).getOrThrow()
+                                delay(300)
+                                publish.onNext(0.0).getOrThrow()
+                                delay(300)
+                                publish.onNext(0.0).getOrThrow()
+                                publish.onCompleted()
+                            }
+                        } catch (_: Exception) {
+                            /*Handled in Chat List*/
+                        } finally {
                             isClientIsStreaming = false
                         }
+
                     }
                 },
                 enabled = !isClientIsStreaming,

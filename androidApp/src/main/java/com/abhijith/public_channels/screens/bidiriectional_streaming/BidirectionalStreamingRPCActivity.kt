@@ -7,11 +7,14 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -27,15 +30,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.abhijith.public_channels.ui.components.MyTopAppBar
 import com.abhijith.public_channels.ui.components.PrimaryButton
+import com.abhijith.public_channels.ui.components.SecondaryButton
 import com.abhijith.public_channels.ui.components.TextInputFiled
+import com.abhijith.public_channels.ui.components.messageShapeDefault
 import com.abhijith.public_channels.ui.theme.ShoppingCatalogueTheme
-import kotlinx.coroutines.Job
 
 class BidirectionalStreamingRPCActivity : ComponentActivity() {
 
-    private val echoServiceGrpc by lazy {
-        BidirectionalStreamingEchoMachine()
-    }
+    private val vm: BidirectionalStreamingRPCViewmodel by viewModels()
 
     companion object {
         fun start(context: Context) {
@@ -64,8 +66,6 @@ class BidirectionalStreamingRPCActivity : ComponentActivity() {
         }
     }
 
-    var job: Job? = null
-
     @Composable
     private fun Content(innerPadding: PaddingValues) {
         Column(
@@ -75,35 +75,63 @@ class BidirectionalStreamingRPCActivity : ComponentActivity() {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             ChatScreen(
-                chatItems = echoServiceGrpc.echos.collectAsState().value,
+                chatItems = vm.echos.collectAsState().value,
                 modifier = Modifier.weight(1f)
             )
-
-            Row(
-                modifier = Modifier.padding(10.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                var echoMessage: String by remember {
-                    mutableStateOf("")
+            if (vm.isConnected) {
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    SecondaryButton(
+                        text = "Disconnect",
+                        onClick = {
+                            vm.disConnect()
+                        },
+                        deleteAction = true,
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp)
+                    )
+                    EchoMessageInputField()
                 }
-                TextInputFiled(
-                    userName = echoMessage,
-                    onInputChanges = { echoMessage = it },
-                    modifier = Modifier.weight(0.7f),
-                    hint = "Type message for echo"
-                )
-                Spacer(modifier = Modifier.width(10.dp))
+            } else {
                 PrimaryButton(
-                    text = "Echo",
+                    text = "Connect to server",
                     onClick = {
-                        echoServiceGrpc.echo(echoMessage)
+                        vm.connectToServer()
                     },
                     enabled = true,
-                    isLoading = false,
-                    modifier = Modifier.weight(0.3f)
+                    modifier = Modifier.fillMaxWidth(0.9f)
                 )
             }
             Spacer(modifier = Modifier.height(10.dp))
+        }
+    }
+
+
+    @Composable
+    private fun EchoMessageInputField() {
+        Row(
+            modifier = Modifier.padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            var echoMessage: String by remember { mutableStateOf("") }
+            TextInputFiled(
+                userName = echoMessage,
+                onInputChanges = { echoMessage = it },
+                modifier = Modifier
+                    .weight(1f)
+                    .defaultMinSize(minHeight = 25.dp),
+                hint = "Type message for echo",
+                shape = messageShapeDefault
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+            PrimaryButton(
+                text = "Echo",
+                onClick = { vm.echo(echoMessage) },
+                enabled = true,
+                isLoading = false,
+                modifier = Modifier.width(100.dp),
+                shape = messageShapeDefault
+            )
         }
     }
 }
