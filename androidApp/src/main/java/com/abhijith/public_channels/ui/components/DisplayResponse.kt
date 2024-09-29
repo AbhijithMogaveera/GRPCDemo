@@ -19,8 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.abhijith.public_channels.HelloResponse
-import com.example.weather.WeatherServiceProto.WeatherUpdate
+import com.abhijith.greeting_service.v1.SayHelloResponse
 import io.grpc.StatusException
 import io.grpc.StatusRuntimeException
 import androidx.compose.foundation.layout.*
@@ -31,10 +30,12 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.abhijith.weather_report_service.v1.WeatherServiceProto.WeatherUpdatesRequest
+import com.abhijith.weather_report_service.v1.WeatherServiceProto.WeatherUpdatesResponse
 
 @Composable
 fun DisplayResponse(
-    response: HelloResponse?,
+    response: SayHelloResponse?,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.height(100.dp)) {
@@ -57,7 +58,7 @@ fun DisplayResponse(
 
 @Composable
 fun DisplayResponse(
-    response: WeatherUpdate,
+    response: WeatherUpdatesResponse,
     modifier: Modifier = Modifier
 ) {
     Card(

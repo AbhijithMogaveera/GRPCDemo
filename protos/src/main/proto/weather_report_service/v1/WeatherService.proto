@@ -1,0 +1,20 @@
+syntax = "proto3";
+package proto.weather_report_service.v1;
+
+option java_outer_classname = "WeatherServiceProto";
+option java_package = "com.abhijith.weather_report_service.v1";
+message WeatherUpdatesRequest {
+  string location = 1;
+}
+
+message WeatherUpdatesResponse {
+  string location = 1;
+  string description = 2;
+  double temperature = 3;
+  double humidity = 4;
+  double wind_speed = 5;
+}
+
+service WeatherReportService {
+  rpc WeatherUpdates(WeatherUpdatesRequest) returns (stream WeatherUpdatesResponse);
+}

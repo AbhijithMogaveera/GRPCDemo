@@ -1,24 +1,24 @@
 package com.abhijith.grpc_server.impl
 
-import com.example.heartratemonitor.HeartRateMonitorGrpc
-import com.example.heartratemonitor.HeartRateMonitorProto
+import com.abhijith.heart_rate_service.v1.HeartRateMonitorProto
+import com.abhijith.heart_rate_service.v1.HeartRateMonitorProto.MonitorHeartRateRequest
+import com.abhijith.heart_rate_service.v1.HeartRateMonitorProto.MonitorHeartRateResponse
+import com.abhijith.heart_rate_service.v1.HeartRateServiceGrpc.HeartRateServiceImplBase
 import io.grpc.Status
 import io.grpc.StatusException
 import io.grpc.stub.StreamObserver
 import kotlin.random.Random
 
 
-object HeartRateMonitorService : HeartRateMonitorGrpc.HeartRateMonitorImplBase() {
+object HeartRateMonitorService : HeartRateServiceImplBase() {
     var throwError = Random.nextBoolean()
 
-    override fun streamHeartRate(
-        responseObserver: StreamObserver<HeartRateMonitorProto.AnomalyResponse>
-    ): StreamObserver<HeartRateMonitorProto.HeartRateRequest> {
+    override fun monitorHeartRate(responseObserver: StreamObserver<MonitorHeartRateResponse>): StreamObserver<HeartRateMonitorProto.MonitorHeartRateRequest> {
         var irregularHeartBeat = false
         throwError = !throwError
-        return object : StreamObserver<HeartRateMonitorProto.HeartRateRequest> {
+        return object : StreamObserver<MonitorHeartRateRequest> {
             var count = 0
-            override fun onNext(heartRateRequest: HeartRateMonitorProto.HeartRateRequest) {
+            override fun onNext(heartRateRequest: MonitorHeartRateRequest) {
                 val heartRate: Double = heartRateRequest.heartRate
                 count++
                 if (throwError && count == 2) {
@@ -34,8 +34,8 @@ object HeartRateMonitorService : HeartRateMonitorGrpc.HeartRateMonitorImplBase()
             override fun onError(t: Throwable) {}
 
             override fun onCompleted() {
-                val response: HeartRateMonitorProto.AnomalyResponse =
-                    HeartRateMonitorProto.AnomalyResponse.newBuilder()
+                val response: MonitorHeartRateResponse =
+                    MonitorHeartRateResponse.newBuilder()
                         .setMessage(if (irregularHeartBeat) "Heart rate is abnormal" else "Heart rate is normal.")
                         .setIsAnomaly(false)
                         .build()

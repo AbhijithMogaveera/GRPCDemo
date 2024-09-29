@@ -1,17 +1,15 @@
 package com.abhijith.grpc_server.impl
 
-import com.abhijith.public_channels.GreetingServiceGrpc
-import com.abhijith.public_channels.HelloRequest
-import com.abhijith.public_channels.HelloResponse
+import com.abhijith.greeting_service.v1.GreetingServiceGrpc
+import com.abhijith.greeting_service.v1.SayHelloRequest
+import com.abhijith.greeting_service.v1.SayHelloResponse
 import io.grpc.Status
-import io.grpc.StatusException
 import io.grpc.StatusRuntimeException
 import io.grpc.stub.StreamObserver
-import kotlin.random.Random
 
 object GreetingService : GreetingServiceGrpc.GreetingServiceImplBase() {
     private var throwError = true
-    override fun sayHello(request: HelloRequest, responseObserver: StreamObserver<HelloResponse>) {
+    override fun sayHello(request: SayHelloRequest, responseObserver: StreamObserver<SayHelloResponse>) {
         throwError = !throwError
         Thread.sleep(500)
         if (throwError) {
@@ -27,7 +25,7 @@ object GreetingService : GreetingServiceGrpc.GreetingServiceImplBase() {
             )
             return
         }
-        val response = HelloResponse.newBuilder()
+        val response = SayHelloResponse.newBuilder()
             .setMessage("Hello, ${request.name}")
             .build()
         responseObserver.onNext(response)

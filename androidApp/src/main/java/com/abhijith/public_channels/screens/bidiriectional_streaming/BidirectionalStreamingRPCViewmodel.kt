@@ -6,9 +6,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.abhijith.public_channels.ui.components.ChatItem
-import com.abhijith.echo.EchoRequest
+import com.abhijith.echo_service.v1.EchoRequest
 import kotlinx.coroutines.flow.MutableStateFlow
-import com.abhijith.echo.EchoServiceGrpc
+import com.abhijith.echo_service.v1.EchoServiceGrpc
 import com.abhijith.public_channels.rpc.GRPCClient
 import com.abhijith.public_channels.rpc.StreamValue
 import com.abhijith.public_channels.rpc.Streamer
@@ -56,7 +56,7 @@ class BidirectionalStreamingRPCViewmodel : ViewModel() {
                 )
             }
         }
-        val observer = stub.bidirectionalStreaming(
+        val observer = stub.echo(
             stream {
                 when (it) {
                     is StreamValue.Error -> {

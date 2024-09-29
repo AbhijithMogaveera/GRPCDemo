@@ -12,8 +12,8 @@ import com.abhijith.public_channels.ui.components.ChatItemNotice
 import com.abhijith.public_channels.ui.components.NoticeType
 import com.abhijith.public_channels.ui.components.messageShapeDefault
 import com.abhijith.public_channels.ui.components.transformAndUpdate
-import com.example.weather.WeatherServiceGrpc
-import com.example.weather.WeatherServiceProto
+import com.abhijith.weather_report_service.v1.WeatherReportServiceGrpc
+import com.abhijith.weather_report_service.v1.WeatherServiceProto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asFlow
@@ -26,15 +26,15 @@ import kotlinx.coroutines.withContext
 
 class ServerStreamingViewmodel : ViewModel() {
 
-    private val stub = WeatherServiceGrpc.newBlockingStub(GRPCClient.channel)
+    private val stub = WeatherReportServiceGrpc.newBlockingStub(GRPCClient.channel)
     val streamingState = MutableStateFlow(StreamState.NO_STARTED)
     val weatherUpdates: MutableStateFlow<List<ChatItem>> = MutableStateFlow(emptyList())
 
     suspend fun streamWeatherUpdates() {
         var hasError = false
         withContext(Dispatchers.IO) {
-            stub.getWeatherUpdates(
-                WeatherServiceProto.WeatherRequest
+            stub.weatherUpdates(
+                WeatherServiceProto.WeatherUpdatesRequest
                     .newBuilder()
                     .setLocation("Bangaluru")
                     .build()

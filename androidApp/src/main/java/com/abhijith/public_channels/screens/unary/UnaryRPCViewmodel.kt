@@ -1,9 +1,9 @@
 package com.abhijith.public_channels.screens.unary
 
 import androidx.lifecycle.ViewModel
-import com.abhijith.public_channels.GreetingServiceGrpc
-import com.abhijith.public_channels.HelloRequest
-import com.abhijith.public_channels.HelloResponse
+import com.abhijith.greeting_service.v1.GreetingServiceGrpc
+import com.abhijith.greeting_service.v1.SayHelloRequest
+import com.abhijith.greeting_service.v1.SayHelloResponse
 import com.abhijith.public_channels.rpc.GRPCClient
 import com.abhijith.public_channels.rpc.StreamValue
 import com.abhijith.public_channels.rpc.streamAsFlow
@@ -14,8 +14,8 @@ class UnaryRPCViewmodel: ViewModel() {
     private val blockingStub = GreetingServiceGrpc.newBlockingStub(GRPCClient.channel)
     private val asyncStub = GreetingServiceGrpc.newStub(GRPCClient.channel)
 
-    fun sayHello(name: String): HelloResponse {
-        val request = HelloRequest.newBuilder()
+    fun sayHello(name: String): SayHelloResponse {
+        val request = SayHelloRequest.newBuilder()
             .setName(name)
             .build()
         return blockingStub.sayHello(request)
@@ -23,9 +23,9 @@ class UnaryRPCViewmodel: ViewModel() {
 
     fun sayHelloAsync(
         name: String
-    ): Flow<StreamValue<HelloResponse>> {
+    ): Flow<StreamValue<SayHelloResponse>> {
         return streamAsFlow {
-            val request = HelloRequest.newBuilder()
+            val request = SayHelloRequest.newBuilder()
                 .setName(name)
                 .build()
             asyncStub.sayHello(request, it)

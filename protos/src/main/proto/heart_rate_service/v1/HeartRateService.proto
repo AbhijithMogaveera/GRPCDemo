@@ -1,0 +1,18 @@
+syntax = "proto3";
+package proto.heart_rate_service.v1;
+
+option java_outer_classname = "HeartRateMonitorProto";
+option java_package = "com.abhijith.heart_rate_service.v1";
+
+message MonitorHeartRateRequest {
+  double heart_rate = 1;
+}
+
+message MonitorHeartRateResponse {
+  string message = 1;
+  bool is_anomaly = 2;
+}
+
+service HeartRateService {
+  rpc MonitorHeartRate(stream MonitorHeartRateRequest) returns (MonitorHeartRateResponse);
+}

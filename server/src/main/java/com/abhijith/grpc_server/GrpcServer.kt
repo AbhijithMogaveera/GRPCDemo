@@ -3,6 +3,7 @@ package com.abhijith.grpc_server
 import com.abhijith.grpc_server.impl.EchoService
 import com.abhijith.grpc_server.impl.GreetingService
 import com.abhijith.grpc_server.impl.HeartRateMonitorService
+import com.abhijith.grpc_server.impl.LoginService
 import com.abhijith.grpc_server.impl.WeatherService
 import io.grpc.Server
 import io.grpc.ServerBuilder
@@ -11,6 +12,8 @@ import java.io.IOException
 class GrpcServer(private val port: Int) {
 
     private val server: Server = ServerBuilder.forPort(port)
+        .intercept(AuthTokenInterceptor())
+        .addService(LoginService)
         .addService(GreetingService) /*unary*/
         .addService(WeatherService) /*server streaming*/
         .addService(HeartRateMonitorService) /*client streaming*/

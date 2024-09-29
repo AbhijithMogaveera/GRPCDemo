@@ -1,15 +1,15 @@
 package com.abhijith.grpc_server.impl
 
-import com.abhijith.echo.EchoRequest
-import com.abhijith.echo.EchoResponse
-import com.abhijith.echo.EchoServiceGrpc
+import com.abhijith.echo_service.v1.EchoRequest
+import com.abhijith.echo_service.v1.EchoResponse
+import com.abhijith.echo_service.v1.EchoServiceGrpc
 import io.grpc.Status
 import io.grpc.StatusException
 import io.grpc.stub.StreamObserver
 
 object EchoService : EchoServiceGrpc.EchoServiceImplBase() {
     private var throwError = true
-    override fun bidirectionalStreaming(responseObserver: StreamObserver<EchoResponse>): StreamObserver<EchoRequest> {
+    override fun echo(responseObserver: StreamObserver<EchoResponse>): StreamObserver<EchoRequest> {
         throwError = !throwError
         return object : StreamObserver<EchoRequest> {
             override fun onNext(request: EchoRequest?) {

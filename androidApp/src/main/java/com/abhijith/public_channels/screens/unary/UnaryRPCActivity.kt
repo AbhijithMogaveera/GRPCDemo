@@ -24,7 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.abhijith.public_channels.HelloResponse
+import com.abhijith.greeting_service.v1.SayHelloResponse
 import com.abhijith.public_channels.rpc.StreamValue
 import com.abhijith.public_channels.ui.components.DisplayError
 import com.abhijith.public_channels.ui.components.DisplayResponse
@@ -48,7 +48,7 @@ class UnaryRPCActivity : ComponentActivity() {
         var isLoading: Boolean by remember {
             mutableStateOf(false)
         }
-        var responseOrNull: StreamValue<HelloResponse>? by remember { mutableStateOf(null) }
+        var responseOrNull: StreamValue<SayHelloResponse>? by remember { mutableStateOf(null) }
         val shape = RoundedCornerShape(16.dp)
         val scope = rememberCoroutineScope()
         val sayHelloWith: (String) -> Unit = {
