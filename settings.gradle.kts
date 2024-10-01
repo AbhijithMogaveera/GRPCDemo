@@ -19,7 +19,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ShoppingCatalogue"
+rootProject.name = "ProtoBufferExample"
 include(":androidApp")
 include(":protos")
 include(":server")
