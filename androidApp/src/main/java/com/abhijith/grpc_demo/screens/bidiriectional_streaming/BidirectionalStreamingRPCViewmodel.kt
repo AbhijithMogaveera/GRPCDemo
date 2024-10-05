@@ -7,17 +7,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.abhijith.echo_service.v1.EchoRequest
 import com.abhijith.echo_service.v1.GrpcEchoServiceClient
-import com.abhijith.public_channels.rpc.GRPCClientHelper
-import com.abhijith.public_channels.rpc.Streamer
-import com.abhijith.public_channels.rpc.getStatusCode
-import com.abhijith.public_channels.rpc.streamer
-import com.abhijith.public_channels.ui.components.ChatGravity
-import com.abhijith.public_channels.ui.components.ChatItem
-import com.abhijith.public_channels.ui.components.ChatItemMessage
-import com.abhijith.public_channels.ui.components.ChatItemNotice
-import com.abhijith.public_channels.ui.components.NoticeType
-import com.abhijith.public_channels.ui.components.messageShapeDefault
-import com.abhijith.public_channels.ui.components.transformAndUpdate
+import com.abhijith.grpc_demo.rpc.GRPCClientHelper
+import com.abhijith.grpc_demo.rpc.Streamer
+import com.abhijith.grpc_demo.rpc.getStatusCode
+import com.abhijith.grpc_demo.rpc.streamer
+import com.abhijith.grpc_demo.ui.components.chat.models.ChatGravity
+import com.abhijith.grpc_demo.ui.components.chat.models.ChatItem
+import com.abhijith.grpc_demo.ui.components.chat.models.ChatItemMessage
+import com.abhijith.grpc_demo.ui.components.chat.models.ChatItemNotice
+import com.abhijith.grpc_demo.ui.components.chat.models.NoticeType
+import com.abhijith.grpc_demo.ui.components.chat.util.MessageShapeDefault
+import com.abhijith.grpc_demo.ui.components.chat.util.transformAndUpdate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -27,19 +27,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
-import com.abhijith.echo_service.v1.EchoServiceGrpc
-import com.abhijith.grpc_demo.rpc.StreamValue
-import com.abhijith.grpc_demo.rpc.Streamer
-import com.abhijith.grpc_demo.rpc.getStatusCode
-import com.abhijith.grpc_demo.rpc.stream
-import com.abhijith.grpc_demo.rpc.streamer
-import com.abhijith.grpc_demo.ui.components.chat.models.ChatGravity
-import com.abhijith.grpc_demo.ui.components.chat.models.ChatItem
-import com.abhijith.grpc_demo.ui.components.chat.models.ChatItemMessage
-import com.abhijith.grpc_demo.ui.components.chat.models.ChatItemNotice
-import com.abhijith.grpc_demo.ui.components.chat.models.NoticeType
-import com.abhijith.grpc_demo.ui.components.chat.util.transformAndUpdate
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class BidirectionalStreamingRPCViewmodel : ViewModel() {
@@ -88,7 +75,7 @@ class BidirectionalStreamingRPCViewmodel : ViewModel() {
                             echos.transformAndUpdate { items ->
                                 items + ChatItemMessage(
                                     gravity = ChatGravity.Left,
-                                    shape = messageShapeDefault,
+                                    shape = MessageShapeDefault,
                                     text = it.message
                                 )
                             }

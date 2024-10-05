@@ -6,9 +6,6 @@ import com.abhijith.greeting_service.v1.SayHelloRequest
 import com.abhijith.greeting_service.v1.SayHelloResponse
 import com.abhijith.grpc_demo.rpc.GRPCClientHelper
 import com.abhijith.grpc_demo.rpc.StreamValue
-import com.abhijith.grpc_demo.rpc.streamAsFlow
-import com.abhijith.public_channels.rpc.GRPCClientHelper
-import com.abhijith.public_channels.rpc.StreamValue
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 

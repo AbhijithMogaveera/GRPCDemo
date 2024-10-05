@@ -2,10 +2,10 @@ package com.abhijith.grpc_demo.screens.client_stream
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.abhijith.grpc_demo.rpc.GRPCClientHelper
 import com.abhijith.grpc_demo.rpc.StreamValue
 import com.abhijith.grpc_demo.rpc.Streamer
 import com.abhijith.grpc_demo.rpc.getStatusCode
-import com.abhijith.grpc_demo.rpc.stream
 import com.abhijith.grpc_demo.rpc.streamer
 import com.abhijith.grpc_demo.ui.components.chat.models.ChatGravity
 import com.abhijith.grpc_demo.ui.components.chat.models.ChatItem
@@ -15,25 +15,9 @@ import com.abhijith.grpc_demo.ui.components.chat.models.ChatItemTheme
 import com.abhijith.grpc_demo.ui.components.chat.models.NoticeType
 import com.abhijith.grpc_demo.ui.components.chat.util.MessageShapeCenter
 import com.abhijith.grpc_demo.ui.components.chat.util.transformAndUpdate
-import com.abhijith.heart_rate_service.v1.HeartRateMonitorProto.MonitorHeartRateRequest
-import com.abhijith.heart_rate_service.v1.HeartRateMonitorProto.MonitorHeartRateResponse
-import com.abhijith.heart_rate_service.v1.HeartRateServiceGrpc
 import com.abhijith.heart_rate_service.v1.GrpcHeartRateServiceClient
 import com.abhijith.heart_rate_service.v1.MonitorHeartRateRequest
 import com.abhijith.heart_rate_service.v1.MonitorHeartRateResponse
-import com.abhijith.public_channels.rpc.GRPCClientHelper
-import com.abhijith.public_channels.rpc.StreamValue
-import com.abhijith.public_channels.rpc.Streamer
-import com.abhijith.public_channels.rpc.getStatusCode
-import com.abhijith.public_channels.rpc.streamer
-import com.abhijith.public_channels.ui.components.ChatGravity
-import com.abhijith.public_channels.ui.components.ChatItem
-import com.abhijith.public_channels.ui.components.ChatItemMessage
-import com.abhijith.public_channels.ui.components.ChatItemNotice
-import com.abhijith.public_channels.ui.components.ChatItemTheme
-import com.abhijith.public_channels.ui.components.NoticeType
-import com.abhijith.public_channels.ui.components.messageShapeCenter
-import com.abhijith.public_channels.ui.components.transformAndUpdate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

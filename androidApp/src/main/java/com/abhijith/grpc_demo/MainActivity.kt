@@ -33,32 +33,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.abhijith.login_service.v1.GrpcLoginServiceClient
-import com.abhijith.login_service.v1.LoginServiceClient
-import com.abhijith.public_channels.rpc.GRPCClientHelper
-import com.abhijith.public_channels.rpc.authToken
-import com.abhijith.public_channels.rpc.getStatusCode
-import com.abhijith.public_channels.screens.bidiriectional_streaming.BidirectionalStreamingRPCActivity
-import com.abhijith.public_channels.screens.client_stream.ClientStreamingRPCActivity
-import com.abhijith.public_channels.screens.server_stream.ServerStreamingRPCActivity
-import com.abhijith.public_channels.screens.unary.UnaryRPCActivity
-import com.abhijith.public_channels.ui.components.PrimaryButton
-import com.abhijith.public_channels.ui.theme.ShoppingCatalogueTheme
-import kotlinx.coroutines.launch
 import com.abhijith.grpc_demo.rpc.GRPCClientHelper
-import com.abhijith.grpc_demo.rpc.StreamValue
 import com.abhijith.grpc_demo.rpc.authToken
 import com.abhijith.grpc_demo.rpc.getStatusCode
-import com.abhijith.grpc_demo.rpc.stream
 import com.abhijith.grpc_demo.screens.bidiriectional_streaming.BidirectionalStreamingRPCActivity
 import com.abhijith.grpc_demo.screens.client_stream.ClientStreamingRPCActivity
 import com.abhijith.grpc_demo.screens.server_stream.ServerStreamingRPCActivity
 import com.abhijith.grpc_demo.screens.unary.UnaryRPCActivity
 import com.abhijith.grpc_demo.ui.components.PrimaryButton
 import com.abhijith.grpc_demo.ui.theme.ShoppingCatalogueTheme
-import com.abhijith.login_service.v1.LoginServiceGrpc
-import io.grpc.Deadline
-import java.util.concurrent.TimeUnit
+import com.abhijith.login_service.v1.GrpcLoginServiceClient
+import com.abhijith.login_service.v1.LoginServiceClient
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 class MainActivity : ComponentActivity() {
