@@ -1,4 +1,4 @@
-package com.abhijith.public_channels
+package com.abhijith.grpc_demo
 
 import org.junit.Test
 

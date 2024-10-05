@@ -15,7 +15,7 @@
         android:theme="@style/Theme.ShoppingCatalogue"
         tools:targetApi="31">
         <activity
-            android:name="com.abhijith.public_channels.MainActivity"
+            android:name="com.abhijith.grpc_demo.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.ShoppingCatalogue">
@@ -26,16 +26,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.abhijith.public_channels.screens.unary.UnaryRPCActivity"
+            android:name="com.abhijith.grpc_demo.screens.unary.UnaryRPCActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="com.abhijith.public_channels.screens.server_stream.ServerStreamingRPCActivity"
+            android:name="com.abhijith.grpc_demo.screens.server_stream.ServerStreamingRPCActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="com.abhijith.public_channels.screens.client_stream.ClientStreamingRPCActivity"
+            android:name="com.abhijith.grpc_demo.screens.client_stream.ClientStreamingRPCActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="com.abhijith.public_channels.screens.bidiriectional_streaming.BidirectionalStreamingRPCActivity"
+            android:name="com.abhijith.grpc_demo.screens.bidiriectional_streaming.BidirectionalStreamingRPCActivity"
             android:windowSoftInputMode="adjustResize" />
     </application>
 
