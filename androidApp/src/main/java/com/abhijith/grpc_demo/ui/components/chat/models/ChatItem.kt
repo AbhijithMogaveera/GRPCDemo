@@ -19,6 +19,10 @@ data class ChatItemNotice(
 ) : ChatItem
 
 data class ChatItemSpace(
+    val space:Dp
+):ChatItem
+
+data class ChatItemSpaceAuto(
     val space: Dp
 ) : ChatItem
 

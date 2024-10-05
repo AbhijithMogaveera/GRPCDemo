@@ -32,6 +32,7 @@ import com.abhijith.grpc_demo.ui.components.chat.models.ChatItem
 import com.abhijith.grpc_demo.ui.components.chat.models.ChatItemMessage
 import com.abhijith.grpc_demo.ui.components.chat.models.ChatItemNotice
 import com.abhijith.grpc_demo.ui.components.chat.models.ChatItemSpace
+import com.abhijith.grpc_demo.ui.components.chat.models.ChatItemSpaceAuto
 import com.abhijith.grpc_demo.ui.components.chat.models.ChatItemTheme
 import com.abhijith.grpc_demo.ui.components.chat.models.NoticeType
 import com.abhijith.grpc_demo.ui.components.chat.util.transform
@@ -52,6 +53,10 @@ fun ChatScreen(
 
                 is ChatItemNotice -> {
                     Notice(chatItem)
+                }
+
+                is ChatItemSpaceAuto -> {
+                    Spacer(modifier = Modifier.height(chatItem.space))
                 }
 
                 is ChatItemSpace -> {
