@@ -14,6 +14,13 @@ composeBom = "2023.08.00"
 appcompat = "1.7.0"
 material = "1.12.0"
 jetbrainsKotlinJvm = "1.9.0"
+protocGenGrpcKotlin = "1.4.1"
+# Wire
+wireGrpcClient = "5.1.0"
+wireGrpcServer = "4.9.9"
+wireGrpcServerVersion = "4.9.9"
+wireMoshiAdapter = "4.9.2"
+wireRuntime = "5.1.0"
 
 #GRPC
 grpc = "1.67.1"
@@ -58,9 +65,15 @@ grpc-kotlin-stub = { module = "io.grpc:grpc-kotlin-stub", version = "1.4.1" }
 
 # Server
 grpc-netty-shaded = { group = "io.grpc", name = "grpc-netty-shaded", version.ref = "grpc" }
-
 # Client
 grpc-okhttp = { module = "io.grpc:grpc-okhttp", version.ref = "grpc" }
+
+# Wire
+squareup-wire-grpc-server = { module = "com.squareup.wire:wire-grpc-server", version.ref = "wireGrpcServerVersion" }
+wire-grpc-client = { module = "com.squareup.wire:wire-grpc-client", version.ref = "wireGrpcClient" }
+wire-grpc-server = { module = "com.squareup.wiregrpcserver:server", version.ref = "wireGrpcServer" }
+wire-moshi-adapter = { module = "com.squareup.wire:wire-moshi-adapter", version.ref = "wireMoshiAdapter" }
+wire-runtime = { module = "com.squareup.wire:wire-runtime", version.ref = "wireRuntime" }
 
 
 [plugins]

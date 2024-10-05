@@ -2,14 +2,13 @@ package com.abhijith.public_channels.screens.client_stream
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.abhijith.heart_rate_service.v1.HeartRateMonitorProto.MonitorHeartRateRequest
-import com.abhijith.heart_rate_service.v1.HeartRateMonitorProto.MonitorHeartRateResponse
-import com.abhijith.heart_rate_service.v1.HeartRateServiceGrpc
-import com.abhijith.public_channels.rpc.GRPCClient
+import com.abhijith.heart_rate_service.v1.GrpcHeartRateServiceClient
+import com.abhijith.heart_rate_service.v1.MonitorHeartRateRequest
+import com.abhijith.heart_rate_service.v1.MonitorHeartRateResponse
+import com.abhijith.public_channels.rpc.GRPCClientHelper
 import com.abhijith.public_channels.rpc.StreamValue
 import com.abhijith.public_channels.rpc.Streamer
 import com.abhijith.public_channels.rpc.getStatusCode
-import com.abhijith.public_channels.rpc.stream
 import com.abhijith.public_channels.rpc.streamer
 import com.abhijith.public_channels.ui.components.ChatGravity
 import com.abhijith.public_channels.ui.components.ChatItem
@@ -19,68 +18,75 @@ import com.abhijith.public_channels.ui.components.ChatItemTheme
 import com.abhijith.public_channels.ui.components.NoticeType
 import com.abhijith.public_channels.ui.components.messageShapeCenter
 import com.abhijith.public_channels.ui.components.transformAndUpdate
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class ClientStreamingRPCViewmodel : ViewModel() {
 
+    var callScope: CoroutineScope? = null
 
-    private val asyncStub = HeartRateServiceGrpc.newStub(GRPCClient.channel)
+    private val asyncStub = GrpcHeartRateServiceClient(GRPCClientHelper.client)
 
     val heartRateChatItem = MutableStateFlow<List<ChatItem>>(emptyList())
 
     fun getHeartRatePublisher(): Streamer<Double> {
+        callScope?.cancel()
+        callScope = CoroutineScope(context = Job() + Dispatchers.IO)
+        val callScope = requireNotNull(callScope)
         var isActive = true
         append("Client stream started", NoticeType.Normal)
-        val requestStreamObserver = asyncStub.monitorHeartRate(stream { streamValue ->
-            when (streamValue) {
-                is StreamValue.Value -> {
+        val (req, res) = asyncStub.MonitorHeartRate().executeIn(callScope)
+        callScope.launch {
+            var hasError: Boolean = false
+            res.consumeAsFlow()
+                .onEach {
                     isActive = false
-                    appendToChatList(streamValue.value)
-                }
-
-                is StreamValue.Error -> {
+                    appendToChatList(it)
+                }.catch {
+                    hasError = true
                     isActive = false
-                    appendToChatList(streamValue)
+                    appendToChatList(it)
                     append(
-                        "Client stream ended with error ${streamValue.error.getStatusCode()}",
+                        "Client stream ended with error ${it.getStatusCode()}",
                         NoticeType.Error
                     )
-                }
-
-                is StreamValue.Complete -> {
-                    append("Client stream ended", NoticeType.Normal)
-                }
+                }.collect()
+            if (!hasError) {
+                append("Client stream ended", NoticeType.Normal)
             }
-        })
+        }
         return streamer(
             isActive = { isActive },
-            onComplete = requestStreamObserver::onCompleted
+            onComplete = {
+                req.close()
+            }
         ) { streamValue ->
             streamValue.onValue { value ->
-                requestStreamObserver.onNext(
-                    MonitorHeartRateRequest
-                        .newBuilder()
-                        .setHeartRate(value)
-                        .build()
-                )
+                req.trySend(MonitorHeartRateRequest(value))
                 appendToChatList(value)
             }
         }
     }
 
-    private fun appendToChatList(streamValue: StreamValue.Error<MonitorHeartRateResponse>) {
+    private fun appendToChatList(streamValue: Throwable) {
         viewModelScope.launch {
             heartRateChatItem.transformAndUpdate { chatItems ->
                 chatItems + ChatItemMessage(
                     gravity = ChatGravity.Left,
                     text = let { _ ->
                         var message = "Oops! something went wrong"
-                        streamValue.onStatusException {
-                            message = it.message ?: message
-                        }
-                        streamValue.onStatusRuntimeException {
-                            message = it.message ?: message
+                        StreamValue.Error(streamValue, null).apply {
+                            onGrpcException {
+                                message = it.message ?: message
+                            }
                         }
                         message
                     },
@@ -128,4 +134,8 @@ class ClientStreamingRPCViewmodel : ViewModel() {
     }
 
 
+    override fun onCleared() {
+        super.onCleared()
+        callScope?.cancel()
+    }
 }

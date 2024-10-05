@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,60 +33,42 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.abhijith.login_service.v1.LoginServiceGrpc
-import com.abhijith.public_channels.rpc.GRPCClient
-import com.abhijith.public_channels.rpc.StreamValue
+import com.abhijith.login_service.v1.GrpcLoginServiceClient
+import com.abhijith.login_service.v1.LoginServiceClient
+import com.abhijith.public_channels.rpc.GRPCClientHelper
 import com.abhijith.public_channels.rpc.authToken
 import com.abhijith.public_channels.rpc.getStatusCode
-import com.abhijith.public_channels.rpc.stream
 import com.abhijith.public_channels.screens.bidiriectional_streaming.BidirectionalStreamingRPCActivity
 import com.abhijith.public_channels.screens.client_stream.ClientStreamingRPCActivity
 import com.abhijith.public_channels.screens.server_stream.ServerStreamingRPCActivity
 import com.abhijith.public_channels.screens.unary.UnaryRPCActivity
 import com.abhijith.public_channels.ui.components.PrimaryButton
 import com.abhijith.public_channels.ui.theme.ShoppingCatalogueTheme
-import io.grpc.Deadline
-import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 class MainActivity : ComponentActivity() {
 
-    private val loginServiceGrpc: LoginServiceGrpc.LoginServiceStub = LoginServiceGrpc
-        .newStub(GRPCClient.channel)
+    private val loginServiceGrpc: LoginServiceClient = GrpcLoginServiceClient(GRPCClientHelper.client)
 
 
     private var isLoginInProgress: Boolean by mutableStateOf(false)
 
-    private fun login() {
+    private suspend fun login() {
         isLoginInProgress = true
-        loginServiceGrpc
-            .withDeadline(Deadline.after(3, TimeUnit.SECONDS))
-            .login(
-                FakeLogin.FakeLoginRequest,
-                stream {
-                    runOnUiThread {
-                        isLoginInProgress = when (it) {
-                            is StreamValue.Complete -> {
-                                false
-                            }
-
-                            is StreamValue.Error -> {
-                                Toast.makeText(
-                                    this,
-                                    (it as? StreamValue.Error)?.error.getStatusCode(),
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                false
-                            }
-
-                            is StreamValue.Value -> {
-                                authToken = it.value.bToken
-                                false
-                            }
-                        }
-                    }
-                }
-            )
+        runCatching {
+            loginServiceGrpc.Login().execute(FakeLogin.FakeLoginRequest)
+        }.onSuccess {
+            authToken = it.b_token
+        }.onFailure {
+            it.printStackTrace()
+            Toast.makeText(
+                this,
+                it.getStatusCode(),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+        isLoginInProgress = false
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -111,6 +94,7 @@ class MainActivity : ComponentActivity() {
                         OnLogin(innerPadding)
 
                     }
+                    val scope = rememberCoroutineScope()
                     AnimatedVisibility(
                         visible = authToken == null,
                         enter = fadeIn(),
@@ -123,7 +107,11 @@ class MainActivity : ComponentActivity() {
                         ) {
                             PrimaryButton(
                                 text = "Fake Login",
-                                onClick = ::login,
+                                onClick = {
+                                    scope.launch {
+                                        login()
+                                    }
+                                },
                                 enabled = true,
                                 modifier = Modifier.align(Alignment.Center),
                                 isLoading = isLoginInProgress

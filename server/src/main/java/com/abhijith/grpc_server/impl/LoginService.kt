@@ -3,21 +3,22 @@ package com.abhijith.grpc_server.impl
 import com.abhijith.grpc_server.FakeLogin
 import com.abhijith.login_service.v1.LoginRequest
 import com.abhijith.login_service.v1.LoginResponse
-import com.abhijith.login_service.v1.LoginServiceGrpc
+import com.abhijith.login_service.v1.LoginServiceServer
 import io.grpc.Status
 import io.grpc.StatusException
-import io.grpc.stub.StreamObserver
+import kotlinx.coroutines.delay
 
-object LoginService:LoginServiceGrpc.LoginServiceImplBase(){
-    override fun login(request: LoginRequest?, responseObserver: StreamObserver<LoginResponse>) {
-        Thread.sleep(1000)
-        if(request == FakeLogin.FakeLoginRequest){
-            responseObserver.onNext(LoginResponse.newBuilder().setBToken(FakeLogin.FakeToken).build())
-            responseObserver.onCompleted()
-        }else{
-            responseObserver.onError(StatusException(Status.UNAUTHENTICATED.withDescription("Failed authenticate user")))
+object LoginService : LoginServiceServer {
+
+    override suspend fun Login(request: LoginRequest): LoginResponse {
+        delay(1000)
+        if (request == FakeLogin.FakeLoginRequest) {
+            return LoginResponse(b_token = FakeLogin.FakeToken);
         }
+        throw StatusException(Status.UNAUTHENTICATED.withDescription("Failed authenticate user"))
     }
+
 }
+
 
 

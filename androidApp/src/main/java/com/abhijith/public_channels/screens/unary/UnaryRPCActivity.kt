@@ -97,17 +97,9 @@ class UnaryRPCActivity : ComponentActivity() {
                     val modifier = Modifier
                         .fillMaxWidth(0.9f)
                         .padding(vertical = 20.dp)
-                    onStatusException { statusException ->
+                    onGrpcException { statusException ->
                         DisplayError(
                             throwable = statusException,
-                            retry = { sayHelloWith(userName) },
-                            modifier = modifier,
-                            shape = shape
-                        )
-                    }
-                    onStatusRuntimeException { statusRuntimeException ->
-                        DisplayError(
-                            throwable = statusRuntimeException,
                             retry = { sayHelloWith(userName) },
                             modifier = modifier,
                             shape = shape

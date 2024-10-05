@@ -1,61 +1,41 @@
-import com.google.protobuf.gradle.id
-
 plugins {
-    id("java-library")
-    alias(libs.plugins.jetbrains.kotlin.jvm)
-    alias(libs.plugins.protobuf)
+    kotlin("jvm")
+    id("com.squareup.wire") version "4.9.2"
 }
 
+group = "org.example"
+version = "1.0-SNAPSHOT"
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
-    sourceSets.getByName("main"){
-        proto.srcDirs("$rootDir/proto/files")
-    }
 }
 
 dependencies {
-    implementation(libs.grpc.netty.shaded)
-    implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.grpc.protobuf)
-    implementation(libs.grpc.stub)
-    implementation(libs.javax.annotation.api)
-    implementation(libs.grpc.kotlin.stub)
-    implementation(libs.protobuf.java)
+    api(libs.squareup.wire.grpc.server)
+    api(libs.kotlinx.coroutines.core)
+    api(libs.wire.runtime)
+    api(libs.wire.moshi.adapter)
+    api(libs.wire.runtime)
+
+    api(libs.grpc.kotlin.stub)
+    api(libs.grpc.protobuf)
+    api(libs.grpc.netty.shaded)
+
 }
 
-protobuf {
-    protoc {
-        artifact = libs.protoc.compiler.get().toString()
-    }
-    plugins {
-        create("grpc") {
-            artifact = libs.protoc.gen.grpc.java.get().toString()
-        }
-        create("grpckt") {
-            artifact = libs.protoc.gen.grpc.kotlin.get().toString()
-        }
-    }
-    generateProtoTasks {
-        all().forEach {
-            if (it.name.startsWith("generateTestProto")) {
-                it.dependsOn("jar")
-            }
-
-            it.plugins {
-                id("grpc")
-                id("grpckt")
-            }
-        }
-    }
+tasks.test {
+    useJUnitPlatform()
 }
 
-tasks {
-    named("compileJava") {
-        dependsOn("generateProto")
-    }
-
-    named("compileTestJava") {
-        dependsOn("generateTestProto")
+wire {
+    kotlin {
+        proto{
+            sourcePath("$rootDir/proto/files")
+        }
+        javaInterop = false
+        rpcRole = "server"
+        grpcServerCompatible = true
+        singleMethodServices = false
+        rpcCallStyle = "suspending"
     }
 }
