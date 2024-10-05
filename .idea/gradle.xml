@@ -10,7 +10,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/androidApp" />
-            <option value="$PROJECT_DIR$/protos" />
+            <option value="$PROJECT_DIR$/androidApp/protoEntities" />
             <option value="$PROJECT_DIR$/server" />
           </set>
         </option>

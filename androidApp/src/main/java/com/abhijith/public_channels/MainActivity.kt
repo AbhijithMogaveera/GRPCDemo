@@ -33,7 +33,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.abhijith.login_service.v1.LoginServiceGrpc
-import com.abhijith.protos.FakeLogin
 import com.abhijith.public_channels.rpc.GRPCClient
 import com.abhijith.public_channels.rpc.StreamValue
 import com.abhijith.public_channels.rpc.authToken
@@ -45,7 +44,6 @@ import com.abhijith.public_channels.screens.server_stream.ServerStreamingRPCActi
 import com.abhijith.public_channels.screens.unary.UnaryRPCActivity
 import com.abhijith.public_channels.ui.components.PrimaryButton
 import com.abhijith.public_channels.ui.theme.ShoppingCatalogueTheme
-import com.google.protobuf.StringValue
 import io.grpc.Deadline
 import java.util.concurrent.TimeUnit
 

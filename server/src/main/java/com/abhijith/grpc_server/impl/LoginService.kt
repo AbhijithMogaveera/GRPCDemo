@@ -1,9 +1,9 @@
 package com.abhijith.grpc_server.impl
 
+import com.abhijith.grpc_server.FakeLogin
 import com.abhijith.login_service.v1.LoginRequest
 import com.abhijith.login_service.v1.LoginResponse
 import com.abhijith.login_service.v1.LoginServiceGrpc
-import com.abhijith.protos.FakeLogin
 import io.grpc.Status
 import io.grpc.StatusException
 import io.grpc.stub.StreamObserver
@@ -19,3 +19,5 @@ object LoginService:LoginServiceGrpc.LoginServiceImplBase(){
         }
     }
 }
+
+

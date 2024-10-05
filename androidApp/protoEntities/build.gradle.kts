@@ -9,19 +9,23 @@ plugins {
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
-    sourceSets.getByName("main"){
+    sourceSets.getByName("main") {
         proto.srcDirs("$rootDir/proto/files")
     }
 }
 
+
 dependencies {
-    implementation(libs.grpc.netty.shaded)
-    implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.grpc.protobuf)
-    implementation(libs.grpc.stub)
-    implementation(libs.javax.annotation.api)
-    implementation(libs.grpc.kotlin.stub)
-    implementation(libs.protobuf.java)
+
+    testImplementation(libs.junit)
+    api(libs.kotlinx.coroutines.core)
+
+    // Proto buffers
+    api(libs.grpc.okhttp)
+    api(libs.grpc.protobuf.lite)
+    api(libs.grpc.stub)
+    api(libs.grpc.kotlin.stub)
+    api(libs.protobuf.java.lite)
 }
 
 protobuf {
@@ -41,21 +45,17 @@ protobuf {
             if (it.name.startsWith("generateTestProto")) {
                 it.dependsOn("jar")
             }
-
+            it.builtins {
+                getByName("java") {
+                    option("lite")
+                }
+            }
             it.plugins {
-                id("grpc")
+                id("grpc") {
+                    option("lite")
+                }
                 id("grpckt")
             }
         }
-    }
-}
-
-tasks {
-    named("compileJava") {
-        dependsOn("generateProto")
-    }
-
-    named("compileTestJava") {
-        dependsOn("generateTestProto")
     }
 }

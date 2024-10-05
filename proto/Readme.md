@@ -1,0 +1,1 @@
+* Use git submodules for sharing proto files

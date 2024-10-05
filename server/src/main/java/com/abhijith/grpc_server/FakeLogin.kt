@@ -1,4 +1,4 @@
-package com.abhijith.protos
+package com.abhijith.grpc_server
 
 import com.abhijith.login_service.v1.LoginRequest
 

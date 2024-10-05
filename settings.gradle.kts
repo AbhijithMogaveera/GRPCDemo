@@ -21,5 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "ProtoBufferExample"
 include(":androidApp")
-include(":protos")
 include(":server")
+include(":androidApp:protoEntities")

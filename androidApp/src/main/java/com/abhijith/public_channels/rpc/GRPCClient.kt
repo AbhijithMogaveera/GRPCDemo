@@ -3,7 +3,6 @@ package com.abhijith.public_channels.rpc
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.abhijith.protos.FakeLogin
 import io.grpc.CallOptions
 import io.grpc.Channel
 import io.grpc.ClientCall

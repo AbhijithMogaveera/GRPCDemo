@@ -20,6 +20,8 @@ android {
         }
     }
 
+
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -67,8 +69,5 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    implementation(project(":protos"))
-    implementation(libs.grpc.okhttp)
-
+    implementation(project(":androidApp:protoEntities"))
 }
-
