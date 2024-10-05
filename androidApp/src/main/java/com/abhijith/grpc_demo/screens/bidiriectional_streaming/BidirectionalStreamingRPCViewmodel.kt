@@ -33,7 +33,7 @@ class BidirectionalStreamingRPCViewmodel : ViewModel() {
 
     val echos = MutableStateFlow<List<ChatItem>>(emptyList())
     private var callScope: CoroutineScope? = null
-    private val stub = GrpcEchoServiceClient(GRPCClientHelper.client)
+    private val grpcEchoServiceClient = GrpcEchoServiceClient(GRPCClientHelper.client)
     private var streamerOrNull: Streamer<String>? = null
 
     var isConnected: Boolean by mutableStateOf(false)
@@ -64,7 +64,7 @@ class BidirectionalStreamingRPCViewmodel : ViewModel() {
                 )
             }
         }
-        val (req, res) = stub.Echo().executeIn(callScope)
+        val (req, res) = grpcEchoServiceClient.Echo().executeIn(callScope)
         callScope.launch {
             var hasError = false
             try {

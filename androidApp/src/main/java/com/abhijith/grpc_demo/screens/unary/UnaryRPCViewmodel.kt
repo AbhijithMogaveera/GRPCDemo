@@ -11,14 +11,14 @@ import kotlinx.coroutines.flow.flow
 
 class UnaryRPCViewmodel : ViewModel() {
 
-    private val asyncStub = GrpcGreetingServiceClient(GRPCClientHelper.client)
+    private val grpcGreetingServiceClient = GrpcGreetingServiceClient(GRPCClientHelper.client)
 
     fun sayHelloAsync(
         name: String
     ): Flow<StreamValue<SayHelloResponse>> {
         return flow {
             kotlin.runCatching {
-                asyncStub.SayHello().execute(
+                grpcGreetingServiceClient.SayHello().execute(
                     SayHelloRequest(
                         name = name
                     )

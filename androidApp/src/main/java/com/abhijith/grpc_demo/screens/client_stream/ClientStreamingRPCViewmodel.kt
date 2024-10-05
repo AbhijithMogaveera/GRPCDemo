@@ -33,7 +33,7 @@ class ClientStreamingRPCViewmodel : ViewModel() {
 
     var callScope: CoroutineScope? = null
 
-    private val asyncStub = GrpcHeartRateServiceClient(GRPCClientHelper.client)
+    private val grpcHeartRateServiceClient = GrpcHeartRateServiceClient(GRPCClientHelper.client)
 
     val heartRateChatItem = MutableStateFlow<List<ChatItem>>(emptyList())
 
@@ -43,7 +43,7 @@ class ClientStreamingRPCViewmodel : ViewModel() {
         val callScope = requireNotNull(callScope)
         var isActive = true
         append("Client stream started", NoticeType.Normal)
-        val (req, res) = asyncStub.MonitorHeartRate().executeIn(callScope)
+        val (req, res) = grpcHeartRateServiceClient.MonitorHeartRate().executeIn(callScope)
         callScope.launch {
             var hasError: Boolean = false
             res.consumeAsFlow()

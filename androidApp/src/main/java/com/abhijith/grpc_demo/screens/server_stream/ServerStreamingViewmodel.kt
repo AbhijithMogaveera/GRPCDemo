@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
 
 class ServerStreamingViewmodel : ViewModel() {
 
-    private val stub = GrpcWeatherReportServiceClient(GRPCClientHelper.client)
+    private val grpcWeatherReportServiceClient = GrpcWeatherReportServiceClient(GRPCClientHelper.client)
     val streamingState = MutableStateFlow(StreamState.NO_STARTED)
     val weatherUpdates: MutableStateFlow<List<ChatItem>> = MutableStateFlow(emptyList())
     private var callScope: CoroutineScope? = null
@@ -43,7 +43,7 @@ class ServerStreamingViewmodel : ViewModel() {
 
         callScope.launch {
 
-            val (req, res) = stub.WeatherUpdates().executeIn(callScope)
+            val (req, res) = grpcWeatherReportServiceClient.WeatherUpdates().executeIn(callScope)
             streamingState.emit(StreamState.ON_GOING)
             weatherUpdates.transformAndUpdate {
                 it + ChatItemNotice("Server streaming started", type = NoticeType.Normal)
@@ -51,7 +51,7 @@ class ServerStreamingViewmodel : ViewModel() {
             callScope.launch {
                 res.consumeAsFlow()
                     .onEach { item->
-                        callScope.launch {
+                        viewModelScope.launch {
                             weatherUpdates.transformAndUpdate {
                                 it + ChatItemMessage(
                                     gravity = ChatGravity.Left,
