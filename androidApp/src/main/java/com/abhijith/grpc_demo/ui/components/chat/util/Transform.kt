@@ -4,7 +4,7 @@ import androidx.compose.ui.unit.dp
 import com.abhijith.grpc_demo.ui.components.chat.models.ChatGravity
 import com.abhijith.grpc_demo.ui.components.chat.models.ChatItem
 import com.abhijith.grpc_demo.ui.components.chat.models.ChatItemMessage
-import com.abhijith.grpc_demo.ui.components.chat.models.ChatItemSpace
+import com.abhijith.grpc_demo.ui.components.chat.models.ChatItemSpaceAuto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -15,7 +15,7 @@ fun transform(
     oldItems: List<ChatItem>,
     transform: (List<ChatItem>) -> List<ChatItem>
 ): List<ChatItem> {
-    val chatItems = oldItems.filter { it !is ChatItemSpace }
+    val chatItems = oldItems.filter { it !is ChatItemSpaceAuto }
     return transform(chatItems)
         .mapIndexed { index, chatItem ->
             if (chatItem is ChatItemMessage) {
@@ -58,16 +58,16 @@ fun transform(
         }
         .let {
             buildList {
-                add(ChatItemSpace(15.dp))
+                add(ChatItemSpaceAuto(15.dp))
                 it.forEachIndexed { index, chatItem ->
                     val previousChatItemOrNull =
                         chatItems.getOrNull(index - 1) as? ChatItemMessage
                     if (previousChatItemOrNull?.gravity != (chatItem as? ChatItemMessage)?.gravity) {
-                        add(ChatItemSpace(15.dp))
+                        add(ChatItemSpaceAuto(15.dp))
                     }
                     add(chatItem)
                 }
-                add(ChatItemSpace(15.dp))
+                add(ChatItemSpaceAuto(15.dp))
             }
         }
 }
