@@ -3,12 +3,12 @@ gRPC is faster than REST due to its use of HTTP/2 (supports multiplexing and bin
 
 ### Use branch [master](https://github.com/AbhijithMogaveera/GRPCDemo/tree/master) for traditional gRPC implementation 
 * on Android side this branch has `protobuf java lite` version implementation
-* useful links [protocol-buffers-on-android](https://github.com/protocolbuffers/protobuf/blob/main/java/README.md#use-java-protocol-buffers-on-android), [Automate with Gradle plugin](https://github.com/google/protobuf-gradle-plugin) 
+* useful links [protocol-buffers-on-android](https://github.com/protocolbuffers/protobuf/blob/main/java/README.md#use-java-protocol-buffers-on-android), [Automate with Gradle plugin](https://github.com/google/protobuf-gradle-plugin), [protobuf.dev](https://protobuf.dev/)
 
 ### Use brnach [wire-based-kotlin-impl](https://github.com/AbhijithMogaveera/GRPCDemo/tree/wire-based-kotlin-impl) for Wire gRPC implementation
 * You can explore more about wire and its added adwantage in [wire doc](https://square.github.io/wire/)
 
-### Usefult Plugins
+### Useful Plugins
 * https://plugins.jetbrains.com/plugin/19147-buf-for-protocol-buffers
 
 ### Server 
