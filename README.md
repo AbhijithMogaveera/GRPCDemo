@@ -4,11 +4,21 @@ gRPC is faster than REST due to its use of HTTP/2 (supports multiplexing and bin
 ### Use branch [master](https://github.com/AbhijithMogaveera/GRPCDemo/tree/master) for traditional gRPC implementation 
 * on Android side this branch has `protobuf java lite` version implementation
 * useful links [protocol-buffers-on-android](https://github.com/protocolbuffers/protobuf/blob/main/java/README.md#use-java-protocol-buffers-on-android), [Automate with Gradle plugin](https://github.com/google/protobuf-gradle-plugin) 
+
 ### Use brnach [wire-based-kotlin-impl](https://github.com/AbhijithMogaveera/GRPCDemo/tree/wire-based-kotlin-impl) for Wire gRPC implementation
 * You can explore more about wire and its added adwantage in [wire doc](https://square.github.io/wire/)
+
 ### Usefult Plugins
 * https://plugins.jetbrains.com/plugin/19147-buf-for-protocol-buffers
+
+### Server 
+* Server code present inside `server` module, you can start your locally hosted server from [here](https://github.com/AbhijithMogaveera/GRPCDemo/blob/master/server/src/main/java/com/abhijith/grpc_server/Main.kt)
+
 ### Screenshots
+* Unary RPC : Client sends a single request and receives a single response.
+* Client Streaming : Client sends multiple requests, receiving a single response from the server after streaming ends.
+* Server Streaming : Client sends a single request, and the server sends multiple responses streamed back to the client.
+*  Bidirectional Streaming : Both client and server send streams of messages to each other, independent of one another.
 <p align="center">
   <img src="https://github.com/user-attachments/assets/1d6cb443-a714-4fe6-98c9-63060b6d6dd1" alt="Image 1" width="45%"/>
   <img src="https://github.com/user-attachments/assets/6d6955d8-fdf6-4e8b-b6f9-1c376e4e99e1" alt="Image 2" width="45%"/>
