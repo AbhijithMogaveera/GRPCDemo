@@ -20,31 +20,19 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.coroutineScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.abhijith.grpc_demo.rpc.StreamState
 import com.abhijith.grpc_demo.ui.components.MyTopAppBar
 import com.abhijith.grpc_demo.ui.components.PrimaryButton
 import com.abhijith.grpc_demo.ui.components.chat.ChatScreen
 import com.abhijith.grpc_demo.ui.theme.ShoppingCatalogueTheme
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 class ServerStreamingRPCActivity : ComponentActivity() {
 
-    private var job: Job? = null
     private val vm: ServerStreamingViewmodel by viewModels()
 
     private fun startStream() {
-        job?.cancel()
-        job = lifecycle.coroutineScope.launch {
-            repeatOnLifecycle(Lifecycle.State.CREATED) {
-                vm.streamWeatherUpdates()
-            }
-        }
+        vm.streamWeatherUpdates()
     }
-    
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,7 +63,7 @@ class ServerStreamingRPCActivity : ComponentActivity() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             val streamState: StreamState = vm.streamingState.collectAsState().value
-            val items = vm.weatherUpdates.collectAsState().value
+            val items = vm.chatList.collectAsState().value
             ChatScreen(chatItems = items, modifier = Modifier.weight(1f))
             Spacer(modifier = Modifier.height(10.dp))
             PrimaryButton(
@@ -87,6 +75,7 @@ class ServerStreamingRPCActivity : ComponentActivity() {
             )
         }
     }
+
     companion object {
         fun start(context: Context) {
             val intent = Intent(context, ServerStreamingRPCActivity::class.java)

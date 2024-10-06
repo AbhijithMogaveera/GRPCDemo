@@ -1,5 +1,8 @@
 package com.abhijith.grpc_demo.screens.client_stream
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.abhijith.grpc_demo.rpc.StreamValue
@@ -18,16 +21,71 @@ import com.abhijith.grpc_demo.ui.components.chat.util.transformAndUpdate
 import com.abhijith.heart_rate_service.v1.HeartRateMonitorProto.MonitorHeartRateRequest
 import com.abhijith.heart_rate_service.v1.HeartRateMonitorProto.MonitorHeartRateResponse
 import com.abhijith.heart_rate_service.v1.HeartRateServiceGrpc
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlin.random.Random
+
 
 class ClientStreamingRPCViewmodel : ViewModel() {
 
     private val asyncStub = HeartRateServiceGrpc.newStub(com.abhijith.grpc_demo.rpc.GRPCClientHelper.channel)
+    private var job: Job? = null
 
-    val heartRateChatItem = MutableStateFlow<List<ChatItem>>(emptyList())
+    var isClientIsStreaming by mutableStateOf(false)
+        private set
 
-    fun getHeartRatePublisher(): Streamer<Double> {
+    private val _chatItems = MutableStateFlow<List<ChatItem>>(emptyList())
+
+    val heartRateChatItem = _chatItems.asStateFlow()
+    /**
+     * Initiates the process of reading and sending heartbeats.
+     * Randomly decides to send either valid or invalid heartbeats for demonstration purposes.
+     */
+    fun readAndSendHeartBeats() {
+        job = viewModelScope.launch {
+            val mockNormal = Random.nextBoolean()
+            isClientIsStreaming = true
+            if (mockNormal) {
+                sendValidHeartBeats()
+            } else {
+                sendInvalidHeartBeats()
+            }
+            isClientIsStreaming = false
+        }
+    }
+
+
+    /**
+     * Sends a predefined sequence of invalid heart rate values to the server.
+     * Each send is delayed by 300 milliseconds to simulate real-time data streaming.
+     */
+    private suspend fun sendInvalidHeartBeats() {
+        val publish = getHeartRatePublisher()
+        repeat(6) {
+            publish.onNext(0.0).getOrThrow()
+            delay(300)
+        }
+        publish.onCompleted()
+    }
+
+    /**
+     * Sends a predefined sequence of valid heart rate values to the server.
+     * Each send is delayed by 300 milliseconds to simulate real-time data streaming.
+     */
+    private suspend fun sendValidHeartBeats() {
+        val streamBuilder = getHeartRatePublisher()
+        val validHeartRates = listOf(45.0, 50.0, 45.0, 50.0, 45.0, 50.0)
+        for (heartRate in validHeartRates) {
+            streamBuilder.onNext(heartRate).getOrThrow()
+            delay(300)
+        }
+        streamBuilder.onCompleted()
+    }
+
+    private fun getHeartRatePublisher(): Streamer<Double> {
         var isActive = true
         append("Client stream started", NoticeType.Normal)
         val requestStreamObserver = asyncStub.monitorHeartRate(stream { streamValue ->
@@ -69,7 +127,7 @@ class ClientStreamingRPCViewmodel : ViewModel() {
 
     private fun appendToChatList(streamValue: StreamValue.Error<MonitorHeartRateResponse>) {
         viewModelScope.launch {
-            heartRateChatItem.transformAndUpdate { chatItems ->
+            _chatItems.transformAndUpdate { chatItems ->
                 chatItems + ChatItemMessage(
                     gravity = ChatGravity.Left,
                     text = let { _ ->
@@ -92,7 +150,7 @@ class ClientStreamingRPCViewmodel : ViewModel() {
 
     private fun appendToChatList(heartRate: Double) {
         viewModelScope.launch {
-            heartRateChatItem.transformAndUpdate { chatItems ->
+            _chatItems.transformAndUpdate { chatItems ->
                 chatItems + ChatItemMessage(
                     gravity = ChatGravity.Right,
                     text = "❤️ $heartRate sent to server",
@@ -105,7 +163,7 @@ class ClientStreamingRPCViewmodel : ViewModel() {
 
     private fun append(string: String, noticeType: NoticeType) {
         viewModelScope.launch {
-            heartRateChatItem.transformAndUpdate {
+            _chatItems.transformAndUpdate {
                 it + ChatItemNotice(
                     message = string,
                     type = noticeType
@@ -116,7 +174,7 @@ class ClientStreamingRPCViewmodel : ViewModel() {
 
     private fun appendToChatList(res: MonitorHeartRateResponse) {
         viewModelScope.launch {
-            heartRateChatItem.transformAndUpdate { chatItems ->
+            _chatItems.transformAndUpdate { chatItems ->
                 chatItems + ChatItemMessage(
                     gravity = ChatGravity.Left, text = res.message,
                     shape = MessageShapeCenter

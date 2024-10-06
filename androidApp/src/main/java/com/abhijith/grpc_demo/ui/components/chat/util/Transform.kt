@@ -74,11 +74,11 @@ fun transform(
 
 
 suspend fun MutableStateFlow<List<ChatItem>>.transformAndUpdate(
-    newList: (List<ChatItem>) -> List<ChatItem>
+    transformer: (List<ChatItem>) -> List<ChatItem>
 ) {
     withContext(Dispatchers.Main) {
         update { items ->
-            transform(items, newList)
+            transform(items, transformer)
         }
     }
 }

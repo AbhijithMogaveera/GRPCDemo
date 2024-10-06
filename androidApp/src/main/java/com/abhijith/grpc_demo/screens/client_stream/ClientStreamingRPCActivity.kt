@@ -15,25 +15,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.abhijith.grpc_demo.ui.components.MyTopAppBar
 import com.abhijith.grpc_demo.ui.components.PrimaryButton
 import com.abhijith.grpc_demo.ui.components.chat.ChatScreen
 import com.abhijith.grpc_demo.ui.theme.ShoppingCatalogueTheme
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlin.random.Random
 
 class ClientStreamingRPCActivity : ComponentActivity() {
 
-    private val heartRateMonitor: ClientStreamingRPCViewmodel by viewModels()
+    private val clientStreamingRPCViewmodel: ClientStreamingRPCViewmodel by viewModels()
 
     companion object {
         fun start(context: Context) {
@@ -62,12 +53,10 @@ class ClientStreamingRPCActivity : ComponentActivity() {
         }
     }
 
-    var job: Job? = null
 
     @Composable
     private fun Content(innerPadding: PaddingValues) {
-        val scope = rememberCoroutineScope()
-        val value = heartRateMonitor.heartRateChatItem.collectAsState().value
+        val value = clientStreamingRPCViewmodel.heartRateChatItem.collectAsState().value
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -78,55 +67,14 @@ class ClientStreamingRPCActivity : ComponentActivity() {
                 chatItems = value,
                 modifier = Modifier.weight(1f)
             )
-            var isClientIsStreaming by remember {
-                mutableStateOf(false)
-            }
+
             PrimaryButton(
                 text = "Start sending hart rate to server",
                 onClick = {
-                    job = scope.launch {
-                        try {
-                            val mockNormal = Random.nextBoolean()
-                            isClientIsStreaming = true
-                            if (mockNormal) {
-                                val streamBuilder = heartRateMonitor.getHeartRatePublisher()
-                                streamBuilder.onNext(45.0).getOrThrow()
-                                delay(300)
-                                streamBuilder.onNext(50.0).getOrThrow()
-                                delay(300)
-                                streamBuilder.onNext(45.0).getOrThrow()
-                                delay(300)
-                                streamBuilder.onNext(50.0).getOrThrow()
-                                delay(300)
-                                streamBuilder.onNext(45.0).getOrThrow()
-                                delay(300)
-                                streamBuilder.onNext(50.0).getOrThrow()
-                                streamBuilder.onCompleted()
-                            } else {
-                                val publish = heartRateMonitor.getHeartRatePublisher()
-                                publish.onNext(0.0).getOrThrow()
-                                delay(300)
-                                publish.onNext(0.0).getOrThrow()
-                                delay(300)
-                                publish.onNext(0.0).getOrThrow()
-                                delay(300)
-                                publish.onNext(0.0).getOrThrow()
-                                delay(300)
-                                publish.onNext(0.0).getOrThrow()
-                                delay(300)
-                                publish.onNext(0.0).getOrThrow()
-                                publish.onCompleted()
-                            }
-                        } catch (_: Exception) {
-                            /*Handled in Chat List*/
-                        } finally {
-                            isClientIsStreaming = false
-                        }
-
-                    }
+                   clientStreamingRPCViewmodel.readAndSendHeartBeats()
                 },
-                enabled = !isClientIsStreaming,
-                isLoading = isClientIsStreaming,
+                enabled = !clientStreamingRPCViewmodel.isClientIsStreaming,
+                isLoading = clientStreamingRPCViewmodel.isClientIsStreaming,
                 modifier = Modifier.fillMaxWidth(0.9f)
             )
         }

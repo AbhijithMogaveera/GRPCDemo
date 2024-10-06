@@ -118,7 +118,7 @@ fun ErrorScreen(
     shape: Shape = RoundedCornerShape(16.dp)
 ) {
     Card(
-        shape = RoundedCornerShape(16.dp),
+        shape =shape,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         modifier = modifier

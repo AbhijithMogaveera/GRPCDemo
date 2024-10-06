@@ -19,17 +19,20 @@ import com.abhijith.grpc_demo.ui.components.chat.models.ChatItemNotice
 import com.abhijith.grpc_demo.ui.components.chat.models.NoticeType
 import com.abhijith.grpc_demo.ui.components.chat.util.transformAndUpdate
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+
 
 class BidirectionalStreamingRPCViewmodel : ViewModel() {
 
-    val echos = MutableStateFlow<List<ChatItem>>(emptyList())
+    private val _chatItems = MutableStateFlow<List<ChatItem>>(emptyList())
 
+    val chatItems = _chatItems.asStateFlow()
     private val stub: EchoServiceGrpc.EchoServiceStub = EchoServiceGrpc.newStub(com.abhijith.grpc_demo.rpc.GRPCClientHelper.channel)
     private var streamerOrNull: Streamer<String>? = null
 
     var isConnected: Boolean by mutableStateOf(false)
-
+        private set
     fun connectToServer() {
         streamerOrNull = getStreamer()
         isConnected = true
@@ -45,7 +48,7 @@ class BidirectionalStreamingRPCViewmodel : ViewModel() {
 
     private fun getStreamer(): Streamer<String> {
         viewModelScope.launch {
-            echos.transformAndUpdate { items ->
+            _chatItems.transformAndUpdate { items ->
                 items + ChatItemNotice(
                     message = "Connected",
                     type = NoticeType.Normal
@@ -57,7 +60,7 @@ class BidirectionalStreamingRPCViewmodel : ViewModel() {
                 when (it) {
                     is StreamValue.Error -> {
                         viewModelScope.launch {
-                            echos.transformAndUpdate { items ->
+                            _chatItems.transformAndUpdate { items ->
                                 items + ChatItemNotice(
                                     message = "Disconnected with error ${it.error.getStatusCode()}",
                                     type = NoticeType.Error
@@ -69,7 +72,7 @@ class BidirectionalStreamingRPCViewmodel : ViewModel() {
 
                     is StreamValue.Complete -> {
                         viewModelScope.launch {
-                            echos.transformAndUpdate { items ->
+                            _chatItems.transformAndUpdate { items ->
                                 items + ChatItemNotice(
                                     message = "Disconnected",
                                     type = NoticeType.Normal
@@ -81,7 +84,7 @@ class BidirectionalStreamingRPCViewmodel : ViewModel() {
 
                     is StreamValue.Value -> {
                         viewModelScope.launch {
-                            echos.transformAndUpdate { items ->
+                            _chatItems.transformAndUpdate { items ->
                                 items + ChatItemMessage(
                                     gravity = ChatGravity.Left,
                                     text = it.value.message
@@ -102,7 +105,7 @@ class BidirectionalStreamingRPCViewmodel : ViewModel() {
                 val echoRequest = EchoRequest.newBuilder().setMessage(it).build()
                 observer.onNext(echoRequest)
                 viewModelScope.launch {
-                    echos.transformAndUpdate { items ->
+                    _chatItems.transformAndUpdate { items ->
                         items + ChatItemMessage(
                             gravity = ChatGravity.Right,
                             text = echoRequest.message
@@ -111,5 +114,10 @@ class BidirectionalStreamingRPCViewmodel : ViewModel() {
                 }
             }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        disConnect()
     }
 }
