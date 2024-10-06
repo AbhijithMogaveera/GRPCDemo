@@ -74,7 +74,7 @@ class BidirectionalStreamingRPCActivity : ComponentActivity() {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             ChatScreen(
-                chatItems = vm.echos.collectAsState().value,
+                chatItems = vm.chatItems.collectAsState().value,
                 modifier = Modifier.weight(1f)
             )
             if (vm.isConnected) {

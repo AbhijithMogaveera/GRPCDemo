@@ -100,7 +100,10 @@ class UnaryRPCActivity : ComponentActivity() {
                     onGrpcException { statusException ->
                         DisplayError(
                             throwable = statusException,
-                            retry = { sayHelloWith(userName) },
+                            retry = {
+                                responseOrNull = null
+                                sayHelloWith(userName)
+                            },
                             modifier = modifier,
                             shape = shape
                         )

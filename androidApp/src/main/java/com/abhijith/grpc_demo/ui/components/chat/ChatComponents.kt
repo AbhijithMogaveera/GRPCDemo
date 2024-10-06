@@ -45,7 +45,9 @@ fun ChatScreen(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(0.dp),
     ) {
-        items(chatItems) { chatItem ->
+        items(chatItems, key = {
+            it.key + it.hashCode()
+        }) { chatItem ->
             when (chatItem) {
                 is ChatItemMessage -> {
                     ChatBubble(chatItem)
