@@ -65,7 +65,9 @@ class ClientStreamingRPCViewmodel : ViewModel() {
     private suspend fun sendInvalidHeartBeats() {
         val publish = getHeartRatePublisher()
         repeat(6) {
-            publish.onNext(0.0).getOrThrow()
+            publish.onNext(0.0).onFailure {
+                return
+            }
             delay(300)
         }
         publish.onCompleted()
@@ -79,7 +81,9 @@ class ClientStreamingRPCViewmodel : ViewModel() {
         val streamBuilder = getHeartRatePublisher()
         val validHeartRates = listOf(45.0, 50.0, 45.0, 50.0, 45.0, 50.0)
         for (heartRate in validHeartRates) {
-            streamBuilder.onNext(heartRate).getOrThrow()
+            streamBuilder.onNext(heartRate).onFailure{
+                return
+            }
             delay(300)
         }
         streamBuilder.onCompleted()

@@ -1,5 +1,10 @@
 package com.abhijith.grpc_demo.screens.server_stream
 
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.abhijith.grpc_demo.rpc.StreamState
@@ -39,44 +44,84 @@ class ServerStreamingViewmodel : ViewModel() {
         viewModelScope.launch {
             var hasError = false
             withContext(Dispatchers.IO) {
-                stub.weatherUpdates(
-                    WeatherServiceProto.WeatherUpdatesRequest
-                        .newBuilder()
-                        .setLocation("Bangaluru")
-                        .build()
-                )
-                    .asFlow()
-                    .onStart {
-                        streamingState.emit(StreamState.ON_GOING)
-                        _chatList.transformAndUpdate {
-                            it + ChatItemNotice("Server streaming started", type = NoticeType.Normal)
-                        }
-                    }
-                    .catch { err ->
-                        hasError = true
-                        _chatList.transformAndUpdate {
-                            it + ChatItemNotice(
-                                "Server streaming ended with error \n${err.getStatusCode()}",
-                                type = NoticeType.Error
-                            )
-                        }
-                        streamingState.emit(StreamState.ERROR)
-                    }
-                    .onEach { res ->
-                        _chatList.transformAndUpdate {
-                            it + ChatItemMessage(
-                                gravity = ChatGravity.Left,
-                                text = res.toString(),
-                            )
-                        }
-                    }
-                    .collect()
-                if (!hasError) {
+                try {
                     _chatList.transformAndUpdate {
-                        it + ChatItemNotice("Server streaming ended", type = NoticeType.Normal)
+                        it+ChatItemMessage(
+                            gravity = ChatGravity.Right,
+                            text = "Give live updates about Bangaluru weather"
+                        )
                     }
+                    stub.weatherUpdates(
+                        WeatherServiceProto.WeatherUpdatesRequest
+                            .newBuilder()
+                            .setLocation("Bangaluru")
+                            .build()
+                    )
+                        .asFlow()
+                        .onStart {
+                            streamingState.emit(StreamState.ON_GOING)
+                            _chatList.transformAndUpdate {
+                                it + ChatItemNotice(
+                                    "Server streaming started",
+                                    type = NoticeType.Normal
+                                )
+                            }
+                        }
+                        .catch { err ->
+                            hasError = true
+                            _chatList.transformAndUpdate {
+                                it + ChatItemNotice(
+                                    "Server streaming ended with error \n${err.getStatusCode()}",
+                                    type = NoticeType.Error
+                                )
+                            }
+                            streamingState.emit(StreamState.ERROR)
+                        }
+                        .onEach { res: WeatherServiceProto.WeatherUpdatesResponse ->
+                            _chatList.transformAndUpdate {
+                                it + ChatItemMessage(
+                                    gravity = ChatGravity.Left,
+                                    text = buildAnnotatedString {
+                                        append("Temperature: ")
+                                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Color(
+                                            0xFFFF9100
+                                        )
+                                        )) {
+                                            append("${res.temperature}°C")
+                                        }
+                                        append("\n")
+
+                                        // Humidity
+                                        append("Humidity: ")
+                                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Color(
+                                            0xFF2979FF
+                                        )
+                                        )) {
+                                            append("${res.humidity}%")
+                                        }
+                                        append("\n")
+
+                                        // Wind Speed
+                                        append("Wind Speed: ")
+                                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Color(
+                                            0xFF00E676
+                                        )
+                                        )) {
+                                            append("${res.windSpeed} m/s")
+                                        }
+                                    },
+                                )
+                            }
+                        }
+                        .collect()
+                } finally {
+                    if (!hasError) {
+                        _chatList.transformAndUpdate {
+                            it + ChatItemNotice("Server streaming ended", type = NoticeType.Normal)
+                        }
+                    }
+                    streamingState.emit(StreamState.END)
                 }
-                streamingState.emit(StreamState.END)
             }
         }
     }
