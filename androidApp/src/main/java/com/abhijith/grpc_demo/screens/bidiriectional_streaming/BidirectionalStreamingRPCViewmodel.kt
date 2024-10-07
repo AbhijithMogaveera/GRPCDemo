@@ -159,23 +159,16 @@ class BidirectionalStreamingRPCViewmodel : ViewModel() {
             onComplete = { req.close() }
         ) { streamValue ->
             streamValue.onValue { message ->
-                // Create an EchoRequest with the message
                 val echoRequest = EchoRequest(message = message)
-                // Launch a coroutine to send the message to the server
                 callScope.launch {
                     req.send(echoRequest)
                 }
-                // Append the sent message to the chat items
                 _chatItems.appendSentMessage(echoRequest)
             }
         }
     }
 
-    /**
-     * Appends a received message from the server to the chat items.
-     *
-     * @param response The [EchoResponse] received from the server.
-     */
+
     private fun MutableStateFlow<List<ChatItem>>.appendReceivedMessage(response: EchoResponse) {
         viewModelScope.launch {
             transformAndUpdate { items ->
@@ -188,11 +181,7 @@ class BidirectionalStreamingRPCViewmodel : ViewModel() {
         }
     }
 
-    /**
-     * Appends a disconnection notice with an error message to the chat items.
-     *
-     * @param throwable The [Throwable] that caused the disconnection.
-     */
+
     private suspend fun MutableStateFlow<List<ChatItem>>.appendDisconnectionWithError(throwable: Throwable) {
         val errorMessage = throwable.getStatusCode().let {
             "Disconnected with error: $it"
@@ -207,10 +196,6 @@ class BidirectionalStreamingRPCViewmodel : ViewModel() {
         }
     }
 
-    /**
-     * Appends a normal termination notice to the chat items.
-     * Indicates that the connection has been closed without errors.
-     */
     private fun MutableStateFlow<List<ChatItem>>.appendNormalTerminationMessage() {
         viewModelScope.launch {
             transformAndUpdate { items ->
@@ -222,11 +207,6 @@ class BidirectionalStreamingRPCViewmodel : ViewModel() {
         }
     }
 
-    /**
-     * Appends a sent message to the chat items.
-     *
-     * @param echoRequest The [EchoRequest] that was sent to the server.
-     */
     private fun MutableStateFlow<List<ChatItem>>.appendSentMessage(echoRequest: EchoRequest) {
         viewModelScope.launch {
             transformAndUpdate { items ->
@@ -238,38 +218,19 @@ class BidirectionalStreamingRPCViewmodel : ViewModel() {
         }
     }
 
-    /**
-     * Appends a notice message to the chat items.
-     *
-     * @param message The notice message to append.
-     * @param type The type of notice (e.g., Normal, Error).
-     */
     private fun MutableStateFlow<List<ChatItem>>.appendNotice(message: String, type: NoticeType) {
         appendChatItem(
             ChatItemNotice(message = message, type = type)
         )
     }
 
-    /**
-     * Appends a generic [ChatItem] to the chat items.
-     *
-     * @param chatItem The [ChatItem] to append.
-     */
     private fun MutableStateFlow<List<ChatItem>>.appendChatItem(chatItem: ChatItem) {
         viewModelScope.launch {
             transformAndUpdate { it + chatItem }
         }
     }
 
-    // ===========================
-    //        Lifecycle
-    // ===========================
 
-    /**
-     * Called when the ViewModel is no longer used and will be destroyed.
-     * Ensures that any active streaming connections are properly disconnected
-     * to prevent memory leaks.
-     */
     override fun onCleared() {
         super.onCleared()
         disConnect()
