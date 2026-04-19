@@ -1,3 +1,16 @@
+------
+🚨 Project Archived 🚨
+
+This repository has been archived and is no longer actively maintained.
+It was created as a experimental project to explore ideas and learn new concepts and never intended to serve as a production-ready.
+
+## Important Notes
+* This project is not actively maintained
+* Code contains experiments and quick prototypes
+* Do not consider this repository as an architecture reference
+* Do not use this as coding guideline or best practice example
+-----
+
 ## Why grpc not Rest ..?
 gRPC is faster than REST due to its use of HTTP/2 (supports multiplexing and binary framing), Protocol Buffers (compact, efficient serialization), and persistent connections. gRPC enables real-time streaming, reduces message size, and improves performance with lower latency and resource usage. REST, using HTTP/1.1 and JSON/XML, is slower due to text-based protocols and connection overhead. gRPC excels in microservices and high-performance applications
 
